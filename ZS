@@ -1,0 +1,140 @@
+-- ASPM | Roblox Studio
+-- 5 Functions:
+-- 1. Speed 1-100
+-- 2. Auto Farm
+-- 3. Auto Deposit
+-- 4. Auto Buy
+-- 5. Server Hop < 2 players
+
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+
+local Player = Players.LocalPlayer
+
+local Speed = 16
+local AutoFarm = false
+local AutoDeposit = false
+local AutoBuy = false
+
+-- GUI
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "ASPM"
+Gui.ResetOnSpawn = false
+Gui.Parent = Player:WaitForChild("PlayerGui")
+
+local Main = Instance.new("Frame")
+Main.Size = UDim2.fromOffset(430, 500)
+Main.Position = UDim2.fromScale(.5, .5)
+Main.AnchorPoint = Vector2.new(.5, .5)
+Main.BackgroundColor3 = Color3.fromRGB(25,25,25)
+Main.BackgroundTransparency = .08
+Main.Parent = Gui
+
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0,14)
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1,0,0,55)
+Title.BackgroundTransparency = 1
+Title.Text = "ASPM"
+Title.TextColor3 = Color3.new(1,1,1)
+Title.TextSize = 28
+Title.Font = Enum.Font.GothamBold
+Title.Parent = Main
+
+local function Button(text, y)
+	local B = Instance.new("TextButton")
+	B.Size = UDim2.new(1,-40,0,50)
+	B.Position = UDim2.new(0,20,0,y)
+	B.BackgroundColor3 = Color3.fromRGB(45,45,45)
+	B.TextColor3 = Color3.new(1,1,1)
+	B.TextSize = 17
+	B.Font = Enum.Font.Gotham
+	B.Text = text
+	B.Parent = Main
+
+	Instance.new("UICorner",B).CornerRadius = UDim.new(0,10)
+	return B
+end
+
+-- Speed
+local SpeedBox = Instance.new("TextBox")
+SpeedBox.Size = UDim2.new(1,-40,0,45)
+SpeedBox.Position = UDim2.new(0,20,0,70)
+SpeedBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+SpeedBox.PlaceholderText = "Speed 1-100"
+SpeedBox.Text = "16"
+SpeedBox.TextColor3 = Color3.new(1,1,1)
+SpeedBox.TextSize = 17
+SpeedBox.Font = Enum.Font.Gotham
+SpeedBox.Parent = Main
+Instance.new("UICorner",SpeedBox).CornerRadius = UDim.new(0,10)
+
+SpeedBox.FocusLost:Connect(function()
+	local n = tonumber(SpeedBox.Text)
+
+	if n then
+		Speed = math.clamp(n,1,100)
+
+		local char = Player.Character
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+
+		if hum then
+			hum.WalkSpeed = Speed
+		end
+
+		SpeedBox.Text = tostring(Speed)
+	end
+end)
+
+-- Auto Farm
+local FarmButton = Button("⚔ Auto Farm : OFF",130)
+
+FarmButton.MouseButton1Click:Connect(function()
+	AutoFarm = not AutoFarm
+
+	FarmButton.Text =
+		"⚔ Auto Farm : "..(AutoFarm and "ON" or "OFF")
+
+	-- ใส่ระบบฟาร์มของเกมคุณตรงนี้
+end)
+
+-- Auto Deposit
+local DepositButton = Button("💰 Auto Deposit : OFF",190)
+
+DepositButton.MouseButton1Click:Connect(function()
+	AutoDeposit = not AutoDeposit
+
+	DepositButton.Text =
+		"💰 Auto Deposit : "..(AutoDeposit and "ON" or "OFF")
+
+	-- ใส่ระบบฝากเงินของเกมคุณตรงนี้
+end)
+
+-- Auto Buy
+local BuyButton = Button("🛒 Auto Buy : OFF",250)
+
+BuyButton.MouseButton1Click:Connect(function()
+	AutoBuy = not AutoBuy
+
+	BuyButton.Text =
+		"🛒 Auto Buy : "..(AutoBuy and "ON" or "OFF")
+
+	-- ใส่ระบบซื้อของของเกมคุณตรงนี้
+end)
+
+-- Server Hop
+local ServerButton = Button("🔄 Server Hop (<2 Players)",310)
+
+ServerButton.MouseButton1Click:Connect(function()
+	-- ใช้ได้กับเกมที่คุณเป็นเจ้าของ
+	TeleportService:TeleportAsync(
+		game.PlaceId,
+		{Player}
+	)
+end)
+
+-- Respawn speed
+Player.CharacterAdded:Connect(function(char)
+	local hum = char:WaitForChild("Humanoid")
+	hum.WalkSpeed = Speed
+end)
